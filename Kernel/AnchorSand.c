@@ -113,9 +113,8 @@ void as_init()
 	printint(AS_NAME_MAX);
 	print("\nAS_DATA_MAX=");
 	printint(AS_DATA_MAX);
-	print("\nIf you have file listing issues, ajust these settings.\n\n");
-	for(i = 0; i < AS_MAX_NODES; i++)
-		as_nodes[i].used = 0;
+	print("\nIf you have file listing issues, adjust these settings.\n\n");
+	for(i = 0; i < AS_MAX_NODES; i++){as_nodes[i].used = 0;}
 
 	as_nodes[0].used = 1;
 	as_nodes[0].type = AS_DIR;
