@@ -1,6 +1,9 @@
 [org 0x7C00]
 [bits 16]
 
+; This code sometimes scares my head off
+; Yeah
+
 KERNEL_OFFSET		equ 0x10000
 KERNEL_SEGMENT		equ 0x1000
 KERNEL_SECTORS		equ 128
