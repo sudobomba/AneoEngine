@@ -19,3 +19,12 @@ custom filesystem that is used exclusively in AneoEngine and doesn't
 support FAT12 or FAT32, but is 100% open-source.
 
 Anyways don't trust Labib and Soldier.jr!
+
+Tips: If you're have a Desktop Enviroment, Edit the QEMU run command line in build.sh
+Like this
+
+qemu-system-i386 -m 512M -fda AneoEngine.ISO -vga std -vnc :1 <-- remove "-vnc :1"
+
+to
+
+qemu-system-i386 -m 512M -fda AneoEngine.ISO -vga std

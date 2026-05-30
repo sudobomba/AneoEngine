@@ -183,6 +183,6 @@ rm *.o
 
 echo "[+] Done!"
 echo "[*] Running 'AneoEngine.ISO'..."
-qemu-system-i386 -m 512M -fda AneoEngine.ISO -vga std -vnc :1
+qemu-system-i386 -m 512M -fda AneoEngine.ISO -vga std -vnc :1 # Change this if you want
 
 
