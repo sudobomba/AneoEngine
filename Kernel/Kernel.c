@@ -31,6 +31,8 @@ extern int shift;
 extern void as_pwd();
 extern void as_ls_path(const char *path);
 extern void cmdtmp(void);
+extern void idt_init(void);
+
 
 #define VGA ((u16*)0xB8000) //VGA buffer address
 #define W 80 //screen width
@@ -351,6 +353,14 @@ void printad(const char *s, uint32_t x)
 	print(":");
 	printx(x);
 	putc('\n');
+}
+
+void printadl(const char *s, uint32_t x)
+{//print a memory address on the same line
+        print(s);
+        print(":");
+        printx(x);
+	print(" ");
 }
 
 void comment(const char *s)
@@ -759,6 +769,16 @@ void shell(void)
 			as_touch(line + 6);
 		else if(starts(line, "cat "))
 			as_cat(line + 4);
+		else if(strcmp(line, "fault") == 0)
+		{
+			__asm__ __volatile__(
+				"mov $0x20, %%ax\n"
+				"mov %%ax, %%ds"
+				:
+				:
+				: "ax"
+			);
+		}
 		else if(starts(line, "cd "))
 		{
 			char *dir;
@@ -801,6 +821,7 @@ void kmain(void)
 {//main
 	clear();
 	startupBanner();
+	idt_init();
 	/* ANCHORSAND SEED START */
 	as_cd("/");
 	as_mkdir("Docs");
@@ -824,7 +845,7 @@ void kmain(void)
 	as_touch("CHANGELOG");
 	as_write("CHANGELOG", "AneoEngine V0.2.1 Change log\n- Changed V0.1 to 0.2 in /Misc/Logo.TXT\nAneoEngine V0.2 Change log\n- Fixed hexadecimal printing\n- Added consistant address printing\n- Added RTC clock printing\n- Added a status bar\n- Added a help menu\n- Added more commands\n- Added a filesystem");
 	as_touch("README");
-	as_write("README", "                   The AneoEngine Operating System\n\nYou can either burn a CD/DVD or flash a USB with the AneoEngine.ISO file.\nYou can also boot it via virtual machine as long as yours supports\nfloppy disc drives, which most of them do. I recommend QEMU since you\nare not installing anything, AneoEngine is a live image.\n\nAneoEngine is supported by any 32-bit CPU, any 64-bit CPU that supports\nLegacy BIOS boot will also run AneoEngine. ARM-64 and RISC-V are not\nsupported.\n\nAneoEngine requires at least 512 megabytes of RAM. (Or 5 MB in QEMU)\n\nAneoEngine files are initialized via the official shell script which\nscans files from the \"Root\" folder in the AneoEngine source code,\nand makes AnchorSand commands of them and puts them into kmain. I know\nthis sounds inefficient, but it happens VERY fast. AnchorSand is a\ncustom filesystem that is used exclusively in AneoEngine and doesn't\nsupport FAT12 or FAT32, but is 100% open-source.\n\nAnyways don't trust Labib and Soldier.jr!");
+	as_write("README", "                   The AneoEngine Operating System\n\nYou can either burn a CD/DVD or flash a USB with the AneoEngine.ISO file.\nYou can also boot it via virtual machine as long as yours supports\nfloppy disc drives, which most of them do. I recommend QEMU since you\nare not installing anything, AneoEngine is a live image.\n\nAneoEngine is supported by any 32-bit CPU, any 64-bit CPU that supports\nLegacy BIOS boot will also run AneoEngine. ARM-64 and RISC-V are not\nsupported.\n\nAneoEngine requires at least 512 megabytes of RAM. (Or 5 MB in QEMU)\n\nAneoEngine files are initialized via the official shell script which\nscans files from the \"Root\" folder in the AneoEngine source code,\nand makes AnchorSand commands of them and puts them into kmain. I know\nthis sounds inefficient, but it happens VERY fast. AnchorSand is a\ncustom filesystem that is used exclusively in AneoEngine and doesn't\nsupport FAT12 or FAT32, but is 100% open-source.\n\nAnyways don't trust Labib and Soldier.jr!\n\nTips: If you're have a Desktop Enviroment, Edit the QEMU run command line in build.sh\nLike this\n\nqemu-system-i386 -m 512M -fda AneoEngine.ISO -vga std -vnc :1 <-- remove \"-vnc :1\"\n\nto\n\nqemu-system-i386 -m 512M -fda AneoEngine.ISO -vga std");
 	as_touch("Welcome.TXT");
 	as_write("Welcome.TXT", "\nTo get started with AneoEngine, press F1.\n");
 	as_cd("..");
@@ -833,7 +854,7 @@ void kmain(void)
 	as_touch("Keymap.c");
 	as_write("Keymap.c", "static const char keymap[128] =\n{//allowed chars\n        0, 27, '1', '2', '3', '4', '5', '6',\n        '7', '8', '9', '0', '-', '=', '\b', '\t',\n        'q', 'w', 'e', 'r', 't', 'y', 'u', 'i',\n        'o', 'p', '[', ']', '\n', 0, 'a', 's',\n        'd', 'f', 'g', 'h', 'j', 'k', 'l', ';',\n        '\'', '`', 0, '\\', 'z', 'x', 'c', 'v',\n        'b', 'n', 'm', ',', '.', '/', 0, '*',\n        0, ' ', 0\n};\n\nstatic const char shiftmap[128] =\n{//allowed chars when shift is pressed\n        0, 27, '!', '@', '#', '$', '%', '^',\n        '&', '*', '(', ')', '_', '+', '\b', '\t',\n        'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I',\n        'O', 'P', '{', '}', '\n', 0, 'A', 'S',\n        'D', 'F', 'G', 'H', 'J', 'K', 'L', ':',\n        '\"', '~', 0, '|', 'Z', 'X', 'C', 'V',\n        'B', 'N', 'M', '<', '>', '?', 0, '*',\n        0, ' ', 0\n};");
 	as_touch("Logo.TXT");
-	as_write("Logo.TXT", "---------------------        AneoEngine V0.2\n---------------------        x86 Operating System\n---------------------\n---------------------        Creator: Rocco Himel\n--------------@@-----\n-------------@-@@----\n------------@--@@----\n-----------@---@@----\n----------@@@@@@@@---\n---------@------@@---\n-------@@@-----@@@@@-\n---------------------");
+	as_write("Logo.TXT", "---------------------        AneoEngine V0.2\n---------------------        x86 Operating System\n---------------------\n---------------------        Creator: Rocco Himel\n--------------@@-----        Got forked by: sudobomba\n-------------@-@@----\n------------@--@@----\n-----------@---@@----\n----------@@@@@@@@---\n---------@------@@---\n-------@@@-----@@@@@-\n---------------------\n\n");
 	as_cd("..");
 	/* ANCHORSAND SEED END */
 	shell();
