@@ -115,7 +115,7 @@ mv "$TMP" "$KERNEL"
 
 echo "AnchorSand seed rebuilt cleanly"
 
-CC="gcc -m32 -ffreestanding -fno-pie -fno-pic -fno-stack-protector -nostdlib"
+CC="i386-elf-gcc -m32 -ffreestanding -fno-pie -fno-pic -fno-stack-protector -nostdlib -nostdinc -I./StdHdr"
 
 echo "[*] Counting lines per file... "
 git ls-files | grep '\.c' | xargs wc -l
@@ -163,8 +163,11 @@ $CC -c Utils/Entropy.c -o Entropy.o
 echo "[CC] Compiling 'Printer' utility..."
 $CC -c Utils/Printer.c -o Printer.o
 
+echo "[CC] CcCGjajay"
+$CC -c Cmds/CommandTemplate.c -o CommandTemplate.o
+
 echo "[LD] Creating kernel binary..."
-ld -m elf_i386 -Ttext 0x10000 -e _start --oformat binary KEntry.o Kernel.o AnchorSand.o PIT.o Haltage.o Keyboard.o Startup.o HelpMenu.o Addr.o UtilsMenu.o Printer.o Entropy.o UtilsList.o -o Boot/KERNEL.BIN
+i386-elf-ld -m elf_i386 -Ttext 0x10000 -e _start --oformat binary KEntry.o Kernel.o AnchorSand.o PIT.o Haltage.o Keyboard.o Startup.o HelpMenu.o Addr.o UtilsMenu.o Printer.o Entropy.o UtilsList.o CommandTemplate.o -o Boot/KERNEL.BIN
 
 echo "[DD] Initializing AneoEngine CDROM image"
 dd if=/dev/zero of=AneoEngine.ISO bs=512 count=2880
@@ -180,6 +183,6 @@ rm *.o
 
 echo "[+] Done!"
 echo "[*] Running 'AneoEngine.ISO'..."
-qemu-system-x86_64 -m 1 -fda AneoEngine.ISO
+qemu-system-i386 -m 512M -fda AneoEngine.ISO -vga std -vnc :1
 
 

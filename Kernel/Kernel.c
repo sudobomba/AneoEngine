@@ -1,6 +1,8 @@
 //File with the main AneoEngine loop and all core
 //funtions
-#include <stdint.h>
+#include "stdint.h"
+#include "stddef.h"
+#include "stdbool.h"
 
 typedef unsigned char u8;
 typedef unsigned short u16;
@@ -28,6 +30,7 @@ extern int as_cd(const char *name);
 extern int shift;
 extern void as_pwd();
 extern void as_ls_path(const char *path);
+extern void cmdtmp(void);
 
 #define VGA ((u16*)0xB8000) //VGA buffer address
 #define W 80 //screen width
@@ -681,11 +684,12 @@ void trim_end(char *s)
 
 void run_commands(void)
 {//put your run commands here:
+	// tenderloin *laughemoji* *laughemoji*
 	comment("cat /Misc/Logo.TXT");
 	as_cat("/Misc/Logo.TXT");
 	as_cd("/Home");
 	comment("ls /Home");
-	as_ls("");
+	as_ls();
 }
 
 void shell(void)
@@ -713,8 +717,8 @@ void shell(void)
 		readline(line, INPUT_MAX);
 
 		color = 0x1F;
-		if(strcmp(line, "cls") == 0)
-			clear();
+		if(strcmp(line, "cls") == 0||strcmp(line, "clr") == 0||strcmp(line,"clrscr") == 0)
+			clear(); // Yes do it
 		else if(strcmp(line, "help") == 0)
 			helpMenu();
 		else if(starts(line, "color "))
@@ -728,11 +732,11 @@ void shell(void)
 		else if(strcmp(line, "utils") == 0)
                         utilsMenu();
 		else if(strcmp(line, "cpustat") == 0)
-			cpustat();
+			print("cpustat is under a rework!\n");
 		else if(strcmp(line, "ls") == 0)
 			as_ls();
 		else if(strcmp(line, "cd") == 0)
-                        as_cd("/Home");
+                        as_cd("/Home"); // Son, why you do this to my ass?
 		else if(starts(line, "ls "))
 		{
 			char *dir;
@@ -785,6 +789,9 @@ void shell(void)
 				}
 			}
 		}
+		else if(strcmp(line, "cmdtmpt") ==0){
+			cmdtmp();
+		}
 		else if(line[0])
                         perror(line);
 	}
@@ -817,14 +824,14 @@ void kmain(void)
 	as_touch("CHANGELOG");
 	as_write("CHANGELOG", "AneoEngine V0.2.1 Change log\n- Changed V0.1 to 0.2 in /Misc/Logo.TXT\nAneoEngine V0.2 Change log\n- Fixed hexadecimal printing\n- Added consistant address printing\n- Added RTC clock printing\n- Added a status bar\n- Added a help menu\n- Added more commands\n- Added a filesystem");
 	as_touch("README");
-	as_write("README", "                   The AneoEngine Operating System\n\nYou can either burn a CD/DVD or flash a USB with the AneoEngine.ISO file.\nYou can also boot it via virtual machine as long as yours supports\nfloppy disc drives, which most of them do. I recommend QEMU since you\nare not installing anything, AneoEngine is a live image.\n\nAneoEngine is supported by any 32-bit CPU, any 64-bit CPU that supports\nLegacy BIOS boot will also run AneoEngine. ARM-64 and RISC-V are not\nsupported.\n\nAneoEngine requires ar least 512 megabytes of RAM.\n\nAneoEngine files are initialized via the official shell script which\nscans files from the \"Root\" folder in the AneoEngine source code,\nand makes AnchorSand commands of them and puts them into kmain. I know\nthis sounds inefficient, but it happens VERY fast. AnchorSand is a\ncustom filesystem that is used exclusively in AneoEngine and doesn't\nsupport FAT12 or FAT32, but is 100% open-source.");
+	as_write("README", "                   The AneoEngine Operating System\n\nYou can either burn a CD/DVD or flash a USB with the AneoEngine.ISO file.\nYou can also boot it via virtual machine as long as yours supports\nfloppy disc drives, which most of them do. I recommend QEMU since you\nare not installing anything, AneoEngine is a live image.\n\nAneoEngine is supported by any 32-bit CPU, any 64-bit CPU that supports\nLegacy BIOS boot will also run AneoEngine. ARM-64 and RISC-V are not\nsupported.\n\nAneoEngine requires at least 512 megabytes of RAM. (Or 5 MB in QEMU)\n\nAneoEngine files are initialized via the official shell script which\nscans files from the \"Root\" folder in the AneoEngine source code,\nand makes AnchorSand commands of them and puts them into kmain. I know\nthis sounds inefficient, but it happens VERY fast. AnchorSand is a\ncustom filesystem that is used exclusively in AneoEngine and doesn't\nsupport FAT12 or FAT32, but is 100% open-source.\n\nAnyways don't trust Labib and Soldier.jr!");
 	as_touch("Welcome.TXT");
 	as_write("Welcome.TXT", "\nTo get started with AneoEngine, press F1.\n");
 	as_cd("..");
 	as_mkdir("Misc");
 	as_cd("Misc");
 	as_touch("Keymap.c");
-	as_write("Keymap.c", "static const char keymap[128] =\n{//allowed chars\n        0, 27, '1', '2', '3', '4', '5', '6',\n        '7', '8', '9', '0', '-', '=', '\\b', '\\t',\n        'q', 'w', 'e', 'r', 't', 'y', 'u', 'i',\n        'o', 'p', '[', ']', '\\n', 0, 'a', 's',\n        'd', 'f', 'g', 'h', 'j', 'k', 'l', ';',\n        '\\'', '`', 0, '\\\\', 'z', 'x', 'c', 'v',\n        'b', 'n', 'm', ',', '.', '/', 0, '*',\n        0, ' ', 0\n};\n\nstatic const char shiftmap[128] =\n{//allowed chars when shift is pressed\n        0, 27, '!', '@', '#', '$', '%', '^',\n        '&', '*', '(', ')', '_', '+', '\\b', '\\t',\n        'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I',\n        'O', 'P', '{', '}', '\\n', 0, 'A', 'S',\n        'D', 'F', 'G', 'H', 'J', 'K', 'L', ':',\n        '\"', '~', 0, '|', 'Z', 'X', 'C', 'V',\n        'B', 'N', 'M', '<', '>', '?', 0, '*',\n        0, ' ', 0\n};");
+	as_write("Keymap.c", "static const char keymap[128] =\n{//allowed chars\n        0, 27, '1', '2', '3', '4', '5', '6',\n        '7', '8', '9', '0', '-', '=', '\b', '\t',\n        'q', 'w', 'e', 'r', 't', 'y', 'u', 'i',\n        'o', 'p', '[', ']', '\n', 0, 'a', 's',\n        'd', 'f', 'g', 'h', 'j', 'k', 'l', ';',\n        '\'', '`', 0, '\\', 'z', 'x', 'c', 'v',\n        'b', 'n', 'm', ',', '.', '/', 0, '*',\n        0, ' ', 0\n};\n\nstatic const char shiftmap[128] =\n{//allowed chars when shift is pressed\n        0, 27, '!', '@', '#', '$', '%', '^',\n        '&', '*', '(', ')', '_', '+', '\b', '\t',\n        'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I',\n        'O', 'P', '{', '}', '\n', 0, 'A', 'S',\n        'D', 'F', 'G', 'H', 'J', 'K', 'L', ':',\n        '\"', '~', 0, '|', 'Z', 'X', 'C', 'V',\n        'B', 'N', 'M', '<', '>', '?', 0, '*',\n        0, ' ', 0\n};");
 	as_touch("Logo.TXT");
 	as_write("Logo.TXT", "---------------------        AneoEngine V0.2\n---------------------        x86 Operating System\n---------------------\n---------------------        Creator: Rocco Himel\n--------------@@-----\n-------------@-@@----\n------------@--@@----\n-----------@---@@----\n----------@@@@@@@@---\n---------@------@@---\n-------@@@-----@@@@@-\n---------------------");
 	as_cd("..");
