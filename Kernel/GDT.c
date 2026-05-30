@@ -1,4 +1,4 @@
-// GDT.c copied/inspired from Nanobyte OS and MellOS
+// GDT.c copied/inspired from Nanobyte OS
 // How many time we got arrested again?
 
 #include "stdint.h"
