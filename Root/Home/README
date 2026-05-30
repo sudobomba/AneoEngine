@@ -7,9 +7,9 @@ are not installing anything, AneoEngine is a live image.
 
 AneoEngine is supported by any 32-bit CPU, any 64-bit CPU that supports
 Legacy BIOS boot will also run AneoEngine. ARM-64 and RISC-V are not
-supported.
+supported. (yet)
 
-AneoEngine requires at least 512 megabytes of RAM. (Or 5 MB in QEMU)
+AneoEngine requires at least 512 megabytes of RAM.
 
 AneoEngine files are initialized via the official shell script which
 scans files from the "Root" folder in the AneoEngine source code,
@@ -18,7 +18,7 @@ this sounds inefficient, but it happens VERY fast. AnchorSand is a
 custom filesystem that is used exclusively in AneoEngine and doesn't
 support FAT12 or FAT32, but is 100% open-source.
 
-Anyways don't trust Labib and Soldier.jr!
+Anyways don't trust Labib43k26
 
 Tips: If you're have a Desktop Enviroment, Edit the QEMU run command line in build.sh
 Like this
@@ -28,3 +28,5 @@ qemu-system-i386 -m 512M -fda AneoEngine.ISO -vga std -vnc :1 <-- remove "-vnc :
 to
 
 qemu-system-i386 -m 512M -fda AneoEngine.ISO -vga std
+
+Also if your machine is already on x86, Change CC and Linker ld

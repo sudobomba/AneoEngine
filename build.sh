@@ -130,6 +130,9 @@ nasm -f elf32 Kernel/KEntry.ASM -o KEntry.o
 echo "Assmebeleing isr"
 nasm -f elf32 Kernel/ISR.asm -o ISR.o
 
+echo "Assembling GDTLoad.asm"
+nasm -f elf32 Kernel/GDTLoad.asm -o GDTLoad.o
+
 echo "[CC] Compiling kernel..."
 $CC -c Kernel/Kernel.c -o Kernel.o
 
@@ -172,8 +175,11 @@ $CC -c Utils/Printer.c -o Printer.o
 echo "[CC] CcCGjajay"
 $CC -c Cmds/CommandTemplate.c -o CommandTemplate.o
 
+echo "Compiling GDT.c"
+$CC -c Kernel/GDT.c -o GDT.o
+
 echo "[LD] Creating kernel binary..."
-i386-elf-ld -m elf_i386 -Ttext 0x10000 -e _start --oformat binary KEntry.o Kernel.o AnchorSand.o PIT.o Haltage.o Keyboard.o Startup.o HelpMenu.o Addr.o UtilsMenu.o Printer.o Entropy.o UtilsList.o CommandTemplate.o ISR.o IDT.o -o Boot/KERNEL.BIN
+i386-elf-ld -m elf_i386 -Ttext 0x10000 -e _start --oformat binary KEntry.o Kernel.o AnchorSand.o PIT.o Haltage.o Keyboard.o Startup.o HelpMenu.o Addr.o UtilsMenu.o Printer.o Entropy.o UtilsList.o CommandTemplate.o ISR.o IDT.o GDTLoad.o GDT.o -o Boot/KERNEL.BIN
 
 echo "[DD] Initializing AneoEngine CDROM image"
 dd if=/dev/zero of=AneoEngine.ISO bs=512 count=2880

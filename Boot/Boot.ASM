@@ -4,6 +4,8 @@
 ; This code sometimes scares my head off
 ; Yeah
 
+; Shaving off some byte here for sake of my heavy A20 Line
+
 KERNEL_OFFSET		equ 0x10000
 KERNEL_SEGMENT		equ 0x1000
 KERNEL_SECTORS		equ 128
@@ -20,45 +22,24 @@ start:
 
 	mov [BOOT_DRIVE], dl
 
-	mov ax, 0x0003
+	mov ah,0x00
+	mov al,0x03
 	int 0x10
 
-	mov ax, 0x1112
+	mov ah,0x11
+	mov al,0x12
 	xor bl, bl
 	int 0x10
 
-	mov si, msg_boot
-	call print16
-
 	call load_kernel
 
-	mov si, msg_loaded
-	call print16
-
-	mov si, msg_prompt
-	call print16
-
-	xor ax, ax
-	int 0x16
-
 	cli
+	call enable_a20
 	lgdt [gdt_descriptor]
 	mov eax, cr0
 	or eax, 1
 	mov cr0, eax
 	jmp CODE_SEG:init_pm
-
-print16:
-	lodsb
-	test al, al
-	jz .done
-	mov ah, 0x0E
-	mov bh, 0
-	mov bl, 0x1F
-	int 0x10
-	jmp print16
-.done:
-	ret
 
 load_kernel:
 	mov ah, 0x08
@@ -115,9 +96,98 @@ load_kernel:
 	ret
 
 disk_error:
-	mov si, msg_disk
-	call print16
 	jmp $
+
+kbc_wait_input_clear:
+	in al,0x64
+	test al,0x02
+	jnz kbc_wait_input_clear
+	ret
+	
+kbc_wait_output_full:
+	in al,0x64
+	test al,0x01
+	jz kbc_wait_output_full
+	ret
+	
+check_a20:
+	push ds
+	push es
+	push si
+	push di
+	xor ax,ax
+	mov ds,ax
+	mov ax,0xFFFF
+	mov es,ax
+	mov si,0x0500
+	mov di,0x0510
+	mov al,[si]
+	push ax
+	mov al,es:[di]
+	push ax
+	mov byte [si],0x00
+	mov byte es:[di],0xFF
+	mov al,[si]
+	cmp al,es:[di]
+	jne .enabled
+	pop ax
+	mov es:[di],al
+	pop ax
+	mov [si],al
+	xor ax,ax
+	jmp .exit
+.enabled:
+	pop ax
+	mov es:[di],al
+	pop ax
+	mov [si],al
+	mov ax,1
+.exit:
+	pop di
+	pop si
+	pop es
+	pop ds
+	ret
+	
+enable_a20:
+	call check_a20
+	cmp ax,1
+	je .done
+.fast:
+	in al,0x92
+	or al,0x02
+	out 0x92,al
+	call check_a20
+	cmp ax,1
+	je .done
+.kbc:
+	call kbc_wait_input_clear
+	mov al,0xAD
+	out 0x64,al
+	call kbc_wait_input_clear
+	mov al,0xD0
+	out 0x64,al
+	call kbc_wait_output_full
+	in al,0x60
+	push ax
+	call kbc_wait_input_clear
+	mov al,0xD1
+	out 0x64,al
+	call kbc_wait_input_clear
+	pop ax
+	or al,0x02
+	out 0x60,al
+	call kbc_wait_input_clear
+	mov al,0xAE
+	out 0x64,al
+	call check_a20
+	cmp ax,1
+	je .done
+.fail:
+	hlt
+	jmp .fail
+.done:
+	ret
 
 [bits 32]
 
@@ -166,11 +236,6 @@ head		db 0
 track		db 0
 spt		db 18
 heads		db 2
-
-msg_boot	db 13,10,13,10,13,10,13,10,"AneoEngine Boot Loader",13,10,0
-msg_loaded	db "Kernel found...",13,10,0
-msg_prompt	db 13,10,"Press any key to continue...",13,10,0
-msg_disk	db "Kernel read error!",13,10,0
 
 times 510 - ($ - $$) db 0
 dw 0xAA55
