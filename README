@@ -7,7 +7,7 @@ are not installing anything, AneoEngine is a live image.
 
 AneoEngine is supported by any 32-bit CPU, any 64-bit CPU that supports
 Legacy BIOS boot will also run AneoEngine. ARM-64 and RISC-V are not
-supported.
+supported. (yet)
 
 AneoEngine requires at least 512 megabytes of RAM.
 
@@ -28,3 +28,5 @@ qemu-system-i386 -m 512M -fda AneoEngine.ISO -vga std -vnc :1 <-- remove "-vnc :
 to
 
 qemu-system-i386 -m 512M -fda AneoEngine.ISO -vga std
+
+Also if your machine is already on x86, Change CC and Linker ld
