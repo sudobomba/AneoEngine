@@ -22,8 +22,10 @@ extern u8 inb(u16 port);
 extern void print(const char *s);
 extern int helpMenu(void);
 extern void reset(void);
+extern void vmoff(void);
 extern int utilsMenu(void);
 extern void cpustat(void);
+extern void halt(void);
 
 static const char keymap[128] =
 {//allowed chars
@@ -68,10 +70,10 @@ static void HandleFn(u8 sc)
 			cpustat();
                         break;
 		case KEY_F5:
-                        print("This is the F5 key\n");
+                        vmoff();
                         break;
 		case KEY_F6:
-                        print("This is the F6 key\n");
+                        halt();
                         break;
 		case KEY_F7:
                         print("This is the F7 key\n");

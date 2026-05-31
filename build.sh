@@ -194,7 +194,8 @@ echo "[*] Removing trash..."
 rm *.o
 
 echo "[+] Done!"
-echo "[*] Running 'AneoEngine.ISO'..."
-qemu-system-i386 -m 512M -fda AneoEngine.ISO -vga std -vnc :1 # Change this if you want
+echo "[+] Making CD-ROM ISO image(Require xorriso) as cd.iso"
+xorriso -as mkisofs -o cd.iso -b AneoEngine.ISO -c boot.cat .
 
+echo "Please run run.sh"
 

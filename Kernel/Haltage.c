@@ -28,6 +28,8 @@ extern void poutbfail(u16 port, u8 val);
 void vmoff(void)
 {//turn the VM off, only works on virtual machines,
 //otherwise will crash your machine
+	print("Poweroff VM\n");
+	sleep(1000);
 	color = 0x0F;
 	unsigned int oldcy = cy;
 	unsigned int oldcx = cx;
@@ -53,7 +55,7 @@ void halt(void)
 {//purposfuly halt your system
 	color = 0x0F;
 	cy = 0;
-	print("Halted...");
+	print("Halted... Safe to poweroff");
 	sleep(1000);
 	for (;;)
 		asm volatile("hlt");

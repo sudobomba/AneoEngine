@@ -729,8 +729,7 @@ void shell(void)
 		color = 0x1F;
 		if(strcmp(line, "cls") == 0||strcmp(line, "clr") == 0||strcmp(line,"clrscr") == 0)
 			clear(); // Yes do it
-		else if(strcmp(line, "help") == 0)
-			helpMenu();
+		else if(strcmp(line, "help") == 0||strcmp(line,"hlp") == 0){helpMenu();}
 		else if(starts(line, "color "))
 			color = atoi(skip(line + 5));
 		else if(strcmp(line, "vmoff") == 0)
@@ -742,7 +741,7 @@ void shell(void)
 		else if(strcmp(line, "utils") == 0)
                         utilsMenu();
 		else if(strcmp(line, "cpustat") == 0)
-			print("cpustat is under a rework!\n");
+			cpustat();
 		else if(strcmp(line, "ls") == 0)
 			as_ls();
 		else if(strcmp(line, "cd") == 0)
@@ -845,8 +844,10 @@ void kmain(void)
 	as_cd("..");
 	as_mkdir("Home");
 	as_cd("Home");
+	as_touch("ADDITIONAL");
+	as_write("ADDITIONAL", "Becuase the code copy other code from Nanobyte OS \nWhich repository can be visited here \n\nNanobyte OS: https://github.com/nanobyte-dev/nanobyte_os.git");
 	as_touch("CHANGELOG");
-	as_write("CHANGELOG", "AneoEngine V0.2.1 Change log\n- Changed V0.1 to 0.2 in /Misc/Logo.TXT\nAneoEngine V0.2 Change log\n- Fixed hexadecimal printing\n- Added consistant address printing\n- Added RTC clock printing\n- Added a status bar\n- Added a help menu\n- Added more commands\n- Added a filesystem");
+	as_write("CHANGELOG", "AneoEngine(fork) Change log\n- Added IDT\n- Added GDT\n- Added A20 Line Enabling in Boot/Boot.ASM\n- Added StdHdr for \"-nostdinc\"\n- Added \"fault\" command\n- Added \"cmdtmpt\" command(Template Command)\n- And more\n\nAneoEngine V0.2.1 Change log\n- Changed V0.1 to 0.2 in /Misc/Logo.TXT\nAneoEngine V0.2 Change log\n- Fixed hexadecimal printing\n- Added consistant address printing\n- Added RTC clock printing\n- Added a status bar\n- Added a help menu\n- Added more commands\n- Added a filesystem\n");
 	as_touch("README");
 	as_write("README", "                   The AneoEngine Operating System\n\nYou can either burn a CD/DVD or flash a USB with the AneoEngine.ISO file.\nYou can also boot it via virtual machine as long as yours supports\nfloppy disc drives, which most of them do. I recommend QEMU since you\nare not installing anything, AneoEngine is a live image.\n\nAneoEngine is supported by any 32-bit CPU, any 64-bit CPU that supports\nLegacy BIOS boot will also run AneoEngine. ARM-64 and RISC-V are not\nsupported. (yet)\n\nAneoEngine requires at least 512 megabytes of RAM.\n\nAneoEngine files are initialized via the official shell script which\nscans files from the \"Root\" folder in the AneoEngine source code,\nand makes AnchorSand commands of them and puts them into kmain. I know\nthis sounds inefficient, but it happens VERY fast. AnchorSand is a\ncustom filesystem that is used exclusively in AneoEngine and doesn't\nsupport FAT12 or FAT32, but is 100% open-source.\n\nAnyways don't trust Labib43k26\n\nTips: If you're have a Desktop Enviroment, Edit the QEMU run command line in build.sh\nLike this\n\nqemu-system-i386 -m 512M -fda AneoEngine.ISO -vga std -vnc :1 <-- remove \"-vnc :1\"\n\nto\n\nqemu-system-i386 -m 512M -fda AneoEngine.ISO -vga std\n\nAlso if your machine is already on x86, Change CC and Linker ld");
 	as_touch("Welcome.TXT");
